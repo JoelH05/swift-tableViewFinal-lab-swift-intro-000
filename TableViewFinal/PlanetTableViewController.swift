@@ -9,4 +9,77 @@
 import UIKit
 
 class PlanetTableViewController: UITableViewController {
+    
+    
+    var planetCellIdentifier: String = "PlanetCell"
+    var planets: [Planet] = []
+    
+    func generatePlanetInfo() {
+        let earthFacts: [String] = [
+            "Earth is the only planet not named after a god.",
+            "Earth has a powerful magnetic field.",
+            "Earth was once believed to be the center of the universe"
+            ]
+        let earth = Planet(name: "Earth", numberOfMoons: 1, fullOrbit: 365.26, facts: earthFacts)
+        
+        let marsFacts: [String] = [
+        "Mars and Earth have approximately the same landmass.",
+        "Mars is the home to the tallet mountain in the solar system.",
+        "Piece of Mars have fallen to Earth."
+        ]
+        
+        let mars = Planet(name: "Mars", numberOfMoons: 2, fullOrbit: 687.0, facts: marsFacts)
+        
+        planets = [earth, mars]
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        generatePlanetInfo()
+       
+    }
+    
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return planets.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PlanetCell", for: indexPath) as! PlanetTableViewCell
+        
+        let planet = planets[indexPath.row]
+        
+        cell.planetNameLabel.text = planet.name
+        
+        var moonsText: String {
+            if planet.numberOfMoons < 2 {
+                return "\(planet.numberOfMoons) Moon"
+            } else {
+                return "\(planet.numberOfMoons) Moons"
+            }
+        }
+        
+        cell.numberOfMoonsLabel.text = moonsText
+        
+        cell.numberOfDaysFullOrbitLabel.text = "\(planet.fullOrbit) days (full orbit)"
+        
+        cell.numberOfFacts.text = "\(planet.facts.count) facts"
+        
+        return cell
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard segue.identifier == "FactViewSegue" else { return }
+        
+        if let dest = segue.destination as? FactTableViewController,
+            let indexPath = tableView.indexPathForSelectedRow {
+            dest.planet = planets[indexPath.row]
+        }
+    }
+    
+    
 }
